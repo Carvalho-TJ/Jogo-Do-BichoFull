@@ -1,4 +1,4 @@
---- 
+---
 name: Super-Linter
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Super-Linter
-        uses: super-linter/super-linter@latest
+        uses: super-linter/super-linter@v5.0.0
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
