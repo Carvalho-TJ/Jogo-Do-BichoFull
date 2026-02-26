@@ -1,12 +1,20 @@
-import Login from './pages/Login.jsx';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
-
   return (
-    <div className="bg-light min-vh-100">
-      <Login />
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Rota inicial: se o usuário acessar '/', mandamos para o Login */}
+        <Route path="/" element={<Navigate to="/login" />} />
+        
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
