@@ -12,26 +12,26 @@ O sistema permite que usuários:
 
 ---
 
-# 🛠 Tecnologias Utilizadas
+## 🛠 Tecnologias Utilizadas
 
-## 🎨 Front-end
+## 🎨 FRONTEND
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
 
-## 🧠 Back-end
+## 🧠 BACKEND
 ![NodeJs](https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![NestJs](https://img.shields.io/badge/nestjs-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![TypeORM](https://img.shields.io/badge/typeorm-FE0803?style=for-the-badge&logo=typeorm&logoColor=white)
 
 ---
 
-# 🏗 Arquitetura do Sistema
+## 🏗 Arquitetura do Sistema
 
 ![Arquitetura](BichoFull-Arquitetura.png)
 
 ---
 
-# 📌 Contrato inicial da API - Endpoints de Autenticação
+## 📌 Contrato inicial da API - Endpoints de Autenticação
 
 ## 🔐 Autenticação
 
@@ -70,7 +70,7 @@ O sistema permite que usuários:
 
 ---
 
-# 📦 Exemplos de Payload
+## 📦 Exemplos de Payload
 
 ## 🎲 POST `/bets`
 
