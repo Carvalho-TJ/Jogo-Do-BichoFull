@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Envelope, Lock, Eye, EyeSlash, BoxArrowInRight } from 'react-bootstrap-icons';
 import Logo from "../assets/bichofull-logo.png"
@@ -107,8 +108,10 @@ const LoginPage = () => {
         </div>
 
         <div className="text-center mb-4">
-          <span className="text-muted">Não tem uma conta? </span>
-          <a href="#" className="fw-bold text-decoration-none" style={{ color: VERDE_MENTA }}>Cadastre-se</a>
+            <span className="text-muted">Não tem uma conta? </span>
+            <Link to="/register" className="fw-bold text-decoration-none" style={{ color: VERDE_MENTA }}>
+            Cadastre-se
+            </Link>
         </div>
       </div>
         <div className="text-center mt-3">
