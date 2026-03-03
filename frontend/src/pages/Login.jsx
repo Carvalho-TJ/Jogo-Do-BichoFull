@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Envelope, Lock, Eye, EyeSlash, BoxArrowInRight } from 'react-bootstrap-icons';
 import Logo from "../assets/bichofull-logo.png"
@@ -10,9 +11,36 @@ const VERDE_MENTA = '#6ee7b7';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const response = await axios.post('http://localhost:3000/auth/login', {
+        email,
+        password
+      });
+
+      console.log('Sucesso!', response.data);
+      
+      // Salva o token no "cofre" do navegador
+      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      alert('Login realizado com sucesso!');
+      navigate('/dashboard');
+      
+    } catch (error) {
+      console.error('Erro ao logar:', error.response?.data);
+      alert(error.response?.data?.message || 'Erro ao conectar com o servidor');
+    }
   };
 
   return (
@@ -30,7 +58,7 @@ const LoginPage = () => {
             <p className="text-muted">Acesse sua conta e vamos apostar!</p>
         </div>
 
-        <form>
+        <form onSubmit={handleLogin}>
             <div className="mb-3">
                 <label
                 htmlFor="emailInput"
@@ -48,6 +76,9 @@ const LoginPage = () => {
 
                 <input
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)} 
+                    required
                     className="form-control ps-5"
                     id="emailInput"
                     placeholder="seu@email.com"
@@ -73,6 +104,9 @@ const LoginPage = () => {
 
                 <input
                     type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required
                     className="form-control ps-5 pe-5"
                     id="passwordInput"
                     placeholder="........"
