@@ -32,13 +32,16 @@ export class UsersService {
     // Depois Cria a carteira com R$ 1.000,00 para esse usuário
     await this.walletsService.create(savedUser, 1000.0);
 
-    const { password: _, ...result } = savedUser;
-    return result;
+    delete savedUser.password;
+    return savedUser;
   }
 
   async findAll(): Promise<Partial<User>[]> {
     const users = await this.usersRepository.find();
-    return users.map(({ password, ...user }) => user);
+    return users.map((user) => {
+      delete user.password;
+      return user;
+    });
   }
 
   async findOne(id: number): Promise<Partial<User>> {
@@ -46,8 +49,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
-    const { password, ...result } = user;
-    return result;
+    delete user.password;
+    return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -69,8 +72,8 @@ export class UsersService {
     const updatedUser = Object.assign(user, updateUserDto);
     const saved = await this.usersRepository.save(updatedUser);
 
-    const { password, ...result } = saved;
-    return result;
+    delete saved.password;
+    return saved;
   }
 
   async remove(id: number): Promise<void> {

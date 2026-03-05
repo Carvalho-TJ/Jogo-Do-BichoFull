@@ -1,6 +1,8 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { WalletsService } from './wallets.service';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { CurrentUserType } from '../common/interfaces/current-user.interface';
 
 @Controller('wallets')
 export class WalletsController {
@@ -8,8 +10,7 @@ export class WalletsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('my-balance')
-  async getMyBalance(@Request() req) {
-    const userId = req.user.userId;
-    return this.walletsService.findWalletByUser(userId);
+  async getMyBalance(@CurrentUser() user: CurrentUserType) {
+    return this.walletsService.findWalletByUser(user.userId);
   }
 }
