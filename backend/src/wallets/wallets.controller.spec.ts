@@ -5,13 +5,17 @@ import { WalletsService } from './wallets.service';
 describe('WalletsController', () => {
   let controller: WalletsController;
 
+  const mockWalletsService = {
+    findWalletByUser: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WalletsController],
       providers: [
         {
           provide: WalletsService,
-          useValue: {},
+          useValue: mockWalletsService,
         },
       ],
     }).compile();
