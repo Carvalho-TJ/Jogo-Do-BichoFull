@@ -8,6 +8,6 @@ import { Wallet } from './entities/wallet.entity';
   imports: [TypeOrmModule.forFeature([Wallet])],
   providers: [WalletsService],
   controllers: [WalletsController],
-  exports: [WalletsService]
+  exports: [WalletsService],
 })
 export class WalletsModule {}

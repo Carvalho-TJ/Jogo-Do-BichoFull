@@ -18,10 +18,10 @@ export class AuthService {
     if (user && (await bcrypt.compare(pass, user.password))) {
       // 3. Se estiver OK, gera o payload do token (o que vai dentro do JWT)
       const payload = { sub: user.id, email: user.email, name: user.name };
-      
+
       return {
         access_token: this.jwtService.sign(payload),
-        user: { id: user.id, name: user.name, email: user.email }
+        user: { id: user.id, name: user.name, email: user.email },
       };
     }
 

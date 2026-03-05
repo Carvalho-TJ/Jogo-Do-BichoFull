@@ -30,8 +30,8 @@ export class UsersService {
     const savedUser = await this.usersRepository.save(newUser);
 
     // Depois Cria a carteira com R$ 1.000,00 para esse usuário
-    await this.walletsService.create(savedUser, 1000.00);
-    
+    await this.walletsService.create(savedUser, 1000.0);
+
     const { password: _, ...result } = savedUser;
     return result;
   }
@@ -54,7 +54,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<Partial<User>> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<Partial<User>> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) throw new NotFoundException(`Usuário ${id} não encontrado`);
 
@@ -65,7 +68,7 @@ export class UsersService {
 
     const updatedUser = Object.assign(user, updateUserDto);
     const saved = await this.usersRepository.save(updatedUser);
-    
+
     const { password, ...result } = saved;
     return result;
   }
@@ -73,7 +76,7 @@ export class UsersService {
   async remove(id: number): Promise<void> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) throw new NotFoundException(`Usuário ${id} não encontrado`);
-    
+
     await this.usersRepository.remove(user);
   }
 }
