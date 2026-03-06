@@ -7,10 +7,14 @@ describe('JwtStrategy', () => {
     strategy = new JwtStrategy();
   });
 
-  it('deve validar e retornar os dados do payload do token', async () => {
+  it('deve validar e retornar os dados do payload do token', () => {
     const payload = { sub: 1, email: 'tiago@email.com', name: 'Tiago' };
-    const result = await strategy.validate(payload);
+    const result = strategy.validate(payload);
 
-    expect(result).toEqual({ userId: 1, email: 'tiago@email.com', name: 'Tiago' });
+    expect(result).toEqual({
+      userId: 1,
+      email: 'tiago@email.com',
+      name: 'Tiago',
+    });
   });
 });

@@ -14,7 +14,7 @@ describe('AuthService', () => {
     id: 1,
     email: 'tiago@email.com',
     password: 'hashed_password',
-    name: 'Tiago'
+    name: 'Tiago',
   };
 
   const mockUsersService = {
@@ -35,7 +35,7 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    
+
     // Limpa os mocks antes de cada teste
     jest.clearAllMocks();
   });
@@ -45,7 +45,7 @@ describe('AuthService', () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
     const result = await service.login('tiago@email.com', 'senha_correta');
-    
+
     expect(result).toHaveProperty('access_token');
     expect(result.access_token).toBe('token_gerado_jwt');
     expect(bcrypt.compare).toHaveBeenCalled();
@@ -55,7 +55,8 @@ describe('AuthService', () => {
     // 3. Simulamos que a senha NÃO bate
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-    await expect(service.login('tiago@email.com', 'senha_errada'))
-      .rejects.toThrow(UnauthorizedException);
+    await expect(
+      service.login('tiago@email.com', 'senha_errada'),
+    ).rejects.toThrow(UnauthorizedException);
   });
 });

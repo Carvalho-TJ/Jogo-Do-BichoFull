@@ -17,7 +17,6 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<Partial<User>> {
     const { password, ...userData } = createUserDto;
-
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -26,21 +25,20 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    // Primeiro salva o usuario
     const savedUser = await this.usersRepository.save(newUser);
-
-    // Depois Cria a carteira com R$ 1.000,00 para esse usuário
     await this.walletsService.create(savedUser, 1000.0);
 
-    delete savedUser.password;
-    return savedUser;
+    const { password: _, ...result } = savedUser;
+    void _;
+    return result;
   }
 
   async findAll(): Promise<Partial<User>[]> {
     const users = await this.usersRepository.find();
     return users.map((user) => {
-      delete user.password;
-      return user;
+      const { password: _, ...userWithoutPassword } = user;
+      void _;
+      return userWithoutPassword;
     });
   }
 
@@ -49,8 +47,9 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
-    delete user.password;
-    return user;
+    const { password: _, ...userWithoutPassword } = user;
+    void _;
+    return userWithoutPassword;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -72,14 +71,14 @@ export class UsersService {
     const updatedUser = Object.assign(user, updateUserDto);
     const saved = await this.usersRepository.save(updatedUser);
 
-    delete saved.password;
-    return saved;
+    const { password: _, ...userWithoutPassword } = saved;
+    void _;
+    return userWithoutPassword;
   }
 
   async remove(id: number): Promise<void> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) throw new NotFoundException(`Usuário ${id} não encontrado`);
-
     await this.usersRepository.remove(user);
   }
 }
