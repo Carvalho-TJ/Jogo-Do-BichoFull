@@ -1,15 +1,16 @@
-import { IsNumber, IsPositive, Max, Min, IsString } from 'class-validator';
+import { IsNumber, IsPositive, Min, IsString, IsEnum, MaxLength, min } from 'class-validator';
+import { BetType } from '../entities/bet.entity';
 
 export class CreateBetDto {
   @IsNumber()
   @IsPositive({ message: 'O valor da aposta deve ser maior que zero' })
+  @Min(0.01)
   value: number;
 
-  @IsNumber()
-  @Min(1)
-  @Max(100)
-  chosenNumber: number;
-
   @IsString()
-  animalName: string;
+  @MaxLength(4)
+  chosenNumber: string;
+
+  @IsEnum(BetType)
+  type: BetType;
 }
