@@ -7,6 +7,12 @@ export enum BetStatus {
   LOST = 'LOST',
 }
 
+export enum BetType {
+  GRUPO = 'grupo',
+  DEZENA = 'dezena',
+  MILHAR = 'milhar',
+}
+
 @Entity('bets')
 export class Bet {
   @PrimaryGeneratedColumn()
@@ -16,10 +22,13 @@ export class Bet {
   value: number;
 
   @Column()
-  chosenNumber: number;
+  chosenNumber: string;
 
   @Column({ nullable: true })
   animalName: string;
+
+  @Column({ type: 'enum', enum: BetType })
+  type: BetType;
 
   @Column({
     type: 'enum',
