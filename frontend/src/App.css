@@ -1,0 +1,28 @@
+.animal-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background-color: white;
+}
+
+.animal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(139, 92, 246, 0.1) !important;
+  border-color: #a78bfa;
+}
+
+.animal-card.selected {
+  background-color: #ecfdf5 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2) !important;
+}
+
+.animal-card.selected .animal-name {
+  color: #065f46 !important;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+}
