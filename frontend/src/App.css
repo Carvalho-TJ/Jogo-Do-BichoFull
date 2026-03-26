@@ -26,3 +26,8 @@
     font-size: 1.2rem;
   }
 }
+
+.hover-opacity:hover {
+  opacity: 0.8;
+  color: #00b894 !important;
+}

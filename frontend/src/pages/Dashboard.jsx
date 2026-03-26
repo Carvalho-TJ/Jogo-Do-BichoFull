@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Wallet2, PersonCircle, BoxArrowRight, Dice5, Trophy, PlayCircle, ClockHistory, LightningCharge, PlusCircle } from 'react-bootstrap-icons';
+import { Wallet2, Trophy, PlayCircle, ClockHistory, LightningCharge, PlusCircle } from 'react-bootstrap-icons';
 import ANIMALS from "../components/AnimalsList";
 import { getAnimalByNumber, getAnimalEmoji } from '../components/AnimalsEmoji';
 import Navbar from '../components/Navbar';
@@ -30,7 +30,6 @@ const Dashboard = () => {
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   const [showWinModal, setShowWinModal] = useState(false);
   const [winData, setWinData] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -283,24 +282,6 @@ const Dashboard = () => {
                 <PlayCircle className="me-2" /> Realizar Sorteio
               </button>
             </div>
-
-            {/* BOTÃO TEMPORÁRIO DE TESTE */}
-            <button 
-              className="btn btn-warning mt-2 w-100"
-              onClick={() => {
-                setWinData({
-                  type: 'milhar',
-                  chosenNumber: '1234',
-                  prizeValue: 4000.00,
-                  multiplier: 4000,
-                  betValue: 1.00,
-                  animalName: 'Cachorro'
-                });
-                setShowWinModal(true);
-              }}
-            >
-              🛠️ Testar Modal de Vitória
-            </button>
 
             {/* CARD ÚLTIMO RESULTADO */}
             {latestDraw && (
