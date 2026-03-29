@@ -24,3 +24,30 @@ CREATE TABLE `wallets` (
   UNIQUE KEY `REL_2ecdb33f23e9a6fc392025c0b9` (`userId`),
   CONSTRAINT `FK_2ecdb33f23e9a6fc392025c0b97` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `bets`;
+
+CREATE TABLE `bets` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `value` decimal(10,2) NOT NULL,
+  `animalName` varchar(255) DEFAULT NULL,
+  `status` enum('PENDING','WON','LOST') NOT NULL DEFAULT 'PENDING',
+  `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `userId` int DEFAULT NULL,
+  `type` enum('grupo','dezena','milhar') NOT NULL,
+  `chosenNumber` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_ca8cf669d26fbfcc365a4811b22` (`userId`),
+  CONSTRAINT `FK_ca8cf669d26fbfcc365a4811b22` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `draws`;
+
+CREATE TABLE `draws` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `type` enum('grupo','dezena','milhar') NOT NULL DEFAULT 'milhar',
+  `winningNumber` varchar(255) NOT NULL,
+  `allNumbers` text,
+  `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
