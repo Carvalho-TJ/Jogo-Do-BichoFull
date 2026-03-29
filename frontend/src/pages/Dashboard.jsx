@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Wallet2, Trophy, PlayCircle, ClockHistory, LightningCharge, PlusCircle } from 'react-bootstrap-icons';
+import { Wallet2, Cash, Trophy, PlayCircle, ClockHistory, LightningCharge, PlusCircle } from 'react-bootstrap-icons';
 import ANIMALS from "../components/AnimalsList";
 import { getAnimalByNumber, getAnimalEmoji } from '../components/AnimalsEmoji';
 import Navbar from '../components/Navbar';
@@ -156,18 +156,37 @@ const Dashboard = () => {
           <div className="col-lg-3">
             {/* CARD DE SALDO */}
             <div className="card border-0 shadow-sm p-4 text-white mb-4" 
-                 style={{ background: `linear-gradient(135deg, ${ROXO_VIBRANTE}, #a78bfa)`, borderRadius: '1.2rem' }}>
+                style={{ 
+                  background: `linear-gradient(135deg, #6c5ce7, #a78bfa)`, 
+                  borderRadius: '1.2rem' 
+                }}>
               <div className="d-flex justify-content-between align-items-center">
                 <p className="mb-0 opacity-75 text-white">Saldo Disponível</p>
                 <Wallet2 size={24} className="opacity-75" />
               </div>
+              
               <h2 className="fw-bold my-3 text-white">
                 R$ {parseFloat(balance).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </h2>
-              <button className="btn btn-light btn-sm fw-bold w-100 d-flex align-items-center justify-content-center" 
-                      style={{ color: ROXO_VIBRANTE, borderRadius: '0.8rem' }}>
-                <PlusCircle className="me-1" /> Adicionar Fundos
-              </button>
+
+              {/* CONTAINER DOS BOTÕES */}
+              <div className="d-flex gap-2">
+                {/* Botão Adicionar saldo */}
+                <button className="btn btn-light btn-sm fw-bold flex-grow-1 d-flex align-items-center justify-content-center py-2" 
+                        style={{ color: '#6c5ce7', borderRadius: '0.8rem' }}>
+                  <PlusCircle className="me-2" /> Adicionar
+                </button>
+
+                {/* Botão Sacar */}
+                <button className="btn btn-sm fw-bold flex-grow-1 d-flex align-items-center justify-content-center py-2 text-white" 
+                        style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+                          border: '1px solid rgba(255, 255, 255, 0.4)',
+                          borderRadius: '0.8rem' 
+                        }}>
+                  <Cash className="me-2" /> Sacar
+                </button>
+              </div>
             </div>
 
             {/* HISTÓRICO DE SORTEIOS */}

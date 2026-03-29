@@ -99,7 +99,7 @@ const Navbar = ({ user, balance }) => {
               <ClockHistory className="me-3 fs-5" /> Histórico
             </Link>
             
-            {/* Espaçador e Botão Sair no final */}
+            {/* Botão Sair */}
             <div className="mt-5 pt-3 border-top">
               <button onClick={handleLogout} className="btn btn-link list-group-item list-group-item-action border-0 py-3 text-danger text-decoration-none fw-bold p-0 d-flex align-items-center">
                 <BoxArrowRight className="me-3 fs-5" /> Sair da conta
@@ -109,7 +109,6 @@ const Navbar = ({ user, balance }) => {
         </div>
       </div>
 
-      {/* OVERLAY (Fundo escuro ao abrir o menu) */}
       {isMenuOpen && (
         <div 
           className="position-fixed top-0 start-0 w-100 h-100 bg-black opacity-50" 
