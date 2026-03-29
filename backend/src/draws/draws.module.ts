@@ -6,10 +6,7 @@ import { Draw } from './entities/draw.entity';
 import { BetsModule } from '../bets/bets.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Draw]),
-    BetsModule
-  ],
+  imports: [TypeOrmModule.forFeature([Draw]), BetsModule],
   controllers: [DrawsController],
   providers: [DrawsService],
 })

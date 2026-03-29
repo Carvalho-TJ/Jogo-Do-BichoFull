@@ -6,10 +6,7 @@ import { Bet } from './entities/bet.entity';
 import { WalletsModule } from '../wallets/wallets.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Bet]),
-    WalletsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Bet]), WalletsModule],
   controllers: [BetsController],
   providers: [BetsService],
   exports: [BetsService],

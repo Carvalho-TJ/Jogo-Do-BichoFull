@@ -27,91 +27,92 @@ export class DrawsService {
       take: 10,
     });
   }
-  
+
   async runDraw() {
-  const numbersDrawn = Array.from({ length: 5 }, () => 
-    Math.floor(Math.random() * 10000).toString().padStart(4, '0')
-  );
-  
-  const winningMilhar = numbersDrawn[0];
-  const winningDezena = winningMilhar.slice(-2);
-  
-  let dezenaInt = parseInt(winningDezena);
-  const winningGroupNumeric = dezenaInt === 0 ? 25 : Math.ceil(dezenaInt / 4);
-  const winningGroup = String(winningGroupNumeric);
+    const numbersDrawn = Array.from({ length: 5 }, () =>
+      Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0'),
+    );
 
-  const queryRunner = this.dataSource.createQueryRunner();
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
+    const winningMilhar = numbersDrawn[0];
+    const winningDezena = winningMilhar.slice(-2);
 
-  const winnersOfThisRun: any[] = [];
+    const dezenaInt = parseInt(winningDezena);
+    const winningGroupNumeric = dezenaInt === 0 ? 25 : Math.ceil(dezenaInt / 4);
+    const winningGroup = String(winningGroupNumeric);
 
-  try {
-    const drawRecord = queryRunner.manager.create(Draw, {
-      winningNumber: winningMilhar,
-      allNumbers: numbersDrawn.join(','), 
-    });
-    const savedDraw = await queryRunner.manager.save(drawRecord);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const pendingBets = await queryRunner.manager.find(Bet, {
-      where: [
-        { status: BetStatus.PENDING },
-        { status: 'PENDING' as any }
-      ],
-      relations: ['user', 'user.wallet'],
-    });
+    const winnersOfThisRun: any[] = [];
 
-    for (const bet of pendingBets) {
-      let isWinner = false;
-      let multiplier = 0;
-      const chosen = String(bet.chosenNumber);
+    try {
+      const drawRecord = queryRunner.manager.create(Draw, {
+        winningNumber: winningMilhar,
+        allNumbers: numbersDrawn.join(','),
+      });
+      const savedDraw = await queryRunner.manager.save(drawRecord);
 
-      if (bet.type === BetType.MILHAR && chosen === winningMilhar) {
-        isWinner = true;
-        multiplier = 4000;
-      } else if (bet.type === BetType.DEZENA && chosen === winningDezena) {
-        isWinner = true;
-        multiplier = 60;
-      } else if (bet.type === BetType.GRUPO && parseInt(chosen) === parseInt(winningGroup)) {
-        isWinner = true;
-        multiplier = 18;
-      }
+      const pendingBets = await queryRunner.manager.find(Bet, {
+        where: [{ status: BetStatus.PENDING }, { status: 'PENDING' as any }],
+        relations: ['user', 'user.wallet'],
+      });
 
-      if (isWinner) {
-        bet.status = BetStatus.WON;
-        const prize = Number(bet.value) * multiplier;
+      for (const bet of pendingBets) {
+        let isWinner = false;
+        let multiplier = 0;
+        const chosen = String(bet.chosenNumber);
 
-        winnersOfThisRun.push({
-          userId: bet.user.id,
-          type: bet.type,
-          chosenNumber: bet.chosenNumber,
-          value: Number(bet.value),
-          prizeValue: prize,
-          multiplier: multiplier
-        });
-        
-        if (bet.user.wallet) {
-          bet.user.wallet.balance = Number(bet.user.wallet.balance) + prize;
-          await queryRunner.manager.save(bet.user.wallet);
+        if (bet.type === BetType.MILHAR && chosen === winningMilhar) {
+          isWinner = true;
+          multiplier = 4000;
+        } else if (bet.type === BetType.DEZENA && chosen === winningDezena) {
+          isWinner = true;
+          multiplier = 60;
+        } else if (
+          bet.type === BetType.GRUPO &&
+          parseInt(chosen) === parseInt(winningGroup)
+        ) {
+          isWinner = true;
+          multiplier = 18;
         }
-      } else {
-        bet.status = BetStatus.LOST;
+
+        if (isWinner) {
+          bet.status = BetStatus.WON;
+          const prize = Number(bet.value) * multiplier;
+
+          winnersOfThisRun.push({
+            userId: bet.user.id,
+            type: bet.type,
+            chosenNumber: bet.chosenNumber,
+            value: Number(bet.value),
+            prizeValue: prize,
+            multiplier: multiplier,
+          });
+
+          if (bet.user.wallet) {
+            bet.user.wallet.balance = Number(bet.user.wallet.balance) + prize;
+            await queryRunner.manager.save(bet.user.wallet);
+          }
+        } else {
+          bet.status = BetStatus.LOST;
+        }
+        await queryRunner.manager.save(bet);
       }
-      await queryRunner.manager.save(bet);
+
+      await queryRunner.commitTransaction();
+
+      return {
+        draw: savedDraw,
+        winners: winnersOfThisRun,
+      };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
-
-    await queryRunner.commitTransaction();
-
-    return { 
-      draw: savedDraw, 
-      winners: winnersOfThisRun
-    };
-
-  } catch (err) {
-    await queryRunner.rollbackTransaction();
-    throw err;
-  } finally {
-    await queryRunner.release();
   }
-}
 }

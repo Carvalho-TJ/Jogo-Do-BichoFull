@@ -1,36 +1,49 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   UseGuards,
-  Request
- } from '@nestjs/common';
+  Request,
+} from '@nestjs/common';
 import { BetsService } from './bets.service';
 import { CreateBetDto } from './dto/create-bet.dto';
 import { UpdateBetDto } from './dto/update-bet.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Apostas')
+@ApiBearerAuth()
 @Controller('bets')
 export class BetsController {
   constructor(private readonly betsService: BetsService) {}
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
+  @ApiOperation({ summary: 'Realiza aposta' })
   create(@Request() req, @Body() createBetDto: CreateBetDto) {
     return this.betsService.create(req.user.userId, createBetDto);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('my-bets')
+  @ApiOperation({ summary: 'Lista todas as apostas do usuário logado' })
   findAll(@Request() req) {
     return this.betsService.findAllByUser(req.user.userId);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Detalhes de uma aposta específica' })
   findOne(@Param('id') id: string) {
     return this.betsService.findOne(+id);
   }

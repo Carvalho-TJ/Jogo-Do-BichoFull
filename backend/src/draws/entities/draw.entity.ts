@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Bet } from '../../bets/entities/bet.entity';
 
 export enum BetType {

@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBetDto } from './dto/create-bet.dto';
@@ -9,25 +13,33 @@ import { Draw } from '../draws/entities/draw.entity';
 
 @Injectable()
 export class BetsService {
-  async findWinnersByDraw(drawId: number, currentUserId: number){
+  async findWinnersByDraw(drawId: number, currentUserId: number) {
     const drawRepository = this.dataSource.getRepository(Draw);
-    const draw = await this.dataSource.getRepository(Draw).findOne({ where: { id: drawId } });
+    const draw = await this.dataSource
+      .getRepository(Draw)
+      .findOne({ where: { id: drawId } });
 
-    if (!draw || (!draw.winningNumber && !draw.winningMilhar)) { 
-      console.error('ERRO: Sorteio não encontrado ou número sorteado está nulo!');
+    if (!draw || (!draw.winningNumber && !draw.winningMilhar)) {
+      console.error(
+        'ERRO: Sorteio não encontrado ou número sorteado está nulo!',
+      );
       return [];
     }
 
     const pendingBets = await this.dataSource.query(
-      `SELECT * FROM bets ORDER BY id DESC LIMIT 1` 
+      `SELECT * FROM bets ORDER BY id DESC LIMIT 1`,
     );
 
     if (pendingBets.length === 0) {
-      const sample = await this.dataSource.query('SELECT id, status FROM bets ORDER BY id DESC LIMIT 5');
+      const sample = await this.dataSource.query(
+        'SELECT id, status FROM bets ORDER BY id DESC LIMIT 5',
+      );
     }
 
     const winnersOfThisRun: Bet[] = [];
-    const winningMilhar = String(draw.winningNumber|| draw.winningMilhar).padStart(4, '0');
+    const winningMilhar = String(
+      draw.winningNumber || draw.winningMilhar,
+    ).padStart(4, '0');
 
     for (const bet of pendingBets) {
       let isWinner = false;
@@ -40,37 +52,36 @@ export class BetsService {
         const checkDezena = lastTwo === 0 ? 100 : lastTwo;
         const winningGroup = Math.ceil(checkDezena / 4);
         if (parseInt(chosen) === winningGroup) isWinner = true;
-      }
-      else if (bet.type === 'dezena') {
+      } else if (bet.type === 'dezena') {
         if (winningMilhar.endsWith(chosen.padStart(2, '0'))) isWinner = true;
-      } 
-      else if (bet.type === 'milhar') {
+      } else if (bet.type === 'milhar') {
         if (winningMilhar === chosen.padStart(4, '0')) isWinner = true;
       }
 
       if (isWinner) {
         await this.dataSource.query(
-          `UPDATE bets SET status = 'WON' WHERE id = ${bet.id}`
+          `UPDATE bets SET status = 'WON' WHERE id = ${bet.id}`,
         );
 
         // Lógica de pagamento
-        const multiplier = bet.type === 'milhar' ? 4000 : bet.type === 'dezena' ? 60 : 18;
+        const multiplier =
+          bet.type === 'milhar' ? 4000 : bet.type === 'dezena' ? 60 : 18;
         const prize = bet.value * multiplier;
 
         const uid = bet.userId || bet.user_id;
 
         // Atualizar saldo do usuário vencedor na carteira
         await this.dataSource.query(
-          `UPDATE wallets SET balance = balance + ${prize} WHERE userId = ${uid}`
+          `UPDATE wallets SET balance = balance + ${prize} WHERE userId = ${uid}`,
         );
 
         winnersOfThisRun.push({
-            ...bet,
-          user: { id: uid }
+          ...bet,
+          user: { id: uid },
         });
       } else {
         await this.dataSource.query(
-          `UPDATE bets SET status = 'LOST' WHERE id = ${bet.id}`
+          `UPDATE bets SET status = 'LOST' WHERE id = ${bet.id}`,
         );
       }
       // Salva o novo status da aposta
@@ -87,7 +98,9 @@ export class BetsService {
       });
     } catch (error) {
       console.error('Erro ao buscar apostas:', error);
-      throw new InternalServerErrorException('Não foi possível carregar seu histórico.');
+      throw new InternalServerErrorException(
+        'Não foi possível carregar seu histórico.',
+      );
     }
   }
   findAll() {
@@ -128,7 +141,9 @@ export class BetsService {
       const currentBalance = Number(wallet.balance);
 
       if (currentBalance < betValue) {
-        throw new BadRequestException('Saldo insuficiente para realizar esta aposta.');
+        throw new BadRequestException(
+          'Saldo insuficiente para realizar esta aposta.',
+        );
       }
 
       // Atualiza o saldo na base de dados
@@ -138,7 +153,7 @@ export class BetsService {
       // Cria o registo da aposta
       const newBet = queryRunner.manager.create(Bet, {
         value: createBetDto.value,
-        chosenNumber: String(createBetDto.chosenNumber), 
+        chosenNumber: String(createBetDto.chosenNumber),
         type: createBetDto.type,
         status: BetStatus.PENDING,
         user: { id: userId } as any,
@@ -149,7 +164,6 @@ export class BetsService {
       // Se deu certo, confirma tudo no banco
       await queryRunner.commitTransaction();
       return savedBet;
-
     } catch (err) {
       // Se der qualquer erro, desfaz a retirada do dinheiro
       await queryRunner.rollbackTransaction();

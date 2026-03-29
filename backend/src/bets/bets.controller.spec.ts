@@ -21,9 +21,9 @@ describe('BetsController', () => {
         },
       ],
     })
-    .overrideGuard(JwtAuthGuard)
-    .useValue({ canActivate: () => true })
-    .compile();
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<BetsController>(BetsController);
   });
