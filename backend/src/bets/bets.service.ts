@@ -8,13 +8,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBetDto } from './dto/create-bet.dto';
 import { Bet, BetStatus } from './entities/bet.entity';
 import { Wallet } from '../wallets/entities/wallet.entity';
-import { UpdateBetDto } from './dto/update-bet.dto';
 import { Draw } from '../draws/entities/draw.entity';
+import { User } from '../users/entities/user.entity';
+import { UpdateBetDto } from './dto/update-bet.dto';
 
 @Injectable()
 export class BetsService {
-  async findWinnersByDraw(drawId: number, currentUserId: number) {
-    const drawRepository = this.dataSource.getRepository(Draw);
+  async findWinnersByDraw(drawId: number) {
     const draw = await this.dataSource
       .getRepository(Draw)
       .findOne({ where: { id: drawId } });
@@ -26,35 +26,32 @@ export class BetsService {
       return [];
     }
 
-    const pendingBets = await this.dataSource.query(
+    const pendingBets: Bet[] = await this.dataSource.query(
       `SELECT * FROM bets ORDER BY id DESC LIMIT 1`,
     );
-
-    if (pendingBets.length === 0) {
-      const sample = await this.dataSource.query(
-        'SELECT id, status FROM bets ORDER BY id DESC LIMIT 5',
-      );
-    }
 
     const winnersOfThisRun: Bet[] = [];
     const winningMilhar = String(
       draw.winningNumber || draw.winningMilhar,
     ).padStart(4, '0');
 
-    for (const bet of pendingBets) {
+    type BetWithUserId = {
+      userId?: number;
+      user_id?: number;
+    } & Record<string, any>;
+
+    for (const bet of pendingBets as BetWithUserId[]) {
       let isWinner = false;
       const chosen = String(bet.chosenNumber);
 
-      const currentBetUserId = bet.userId || bet.user_id;
-
-      if (bet.type === 'grupo') {
+      if (String(bet.type) === 'grupo') {
         const lastTwo = parseInt(winningMilhar.slice(-2));
         const checkDezena = lastTwo === 0 ? 100 : lastTwo;
         const winningGroup = Math.ceil(checkDezena / 4);
         if (parseInt(chosen) === winningGroup) isWinner = true;
-      } else if (bet.type === 'dezena') {
+      } else if (String(bet.type) === 'dezena') {
         if (winningMilhar.endsWith(chosen.padStart(2, '0'))) isWinner = true;
-      } else if (bet.type === 'milhar') {
+      } else if (String(bet.type) === 'milhar') {
         if (winningMilhar === chosen.padStart(4, '0')) isWinner = true;
       }
 
@@ -65,10 +62,18 @@ export class BetsService {
 
         // Lógica de pagamento
         const multiplier =
-          bet.type === 'milhar' ? 4000 : bet.type === 'dezena' ? 60 : 18;
-        const prize = bet.value * multiplier;
+          String(bet.type) === 'milhar'
+            ? 4000
+            : String(bet.type) === 'dezena'
+              ? 60
+              : 18;
+        const prize = Number(bet.value) * multiplier;
 
-        const uid = bet.userId || bet.user_id;
+        const uid = bet.userId ?? bet.user_id;
+
+        if (!uid) {
+          throw new Error('User ID não encontrado na aposta');
+        }
 
         // Atualizar saldo do usuário vencedor na carteira
         await this.dataSource.query(
@@ -77,20 +82,18 @@ export class BetsService {
 
         winnersOfThisRun.push({
           ...bet,
-          user: { id: uid },
-        });
+          user: { id: uid } as User,
+        } as Bet);
       } else {
         await this.dataSource.query(
           `UPDATE bets SET status = 'LOST' WHERE id = ${bet.id}`,
         );
       }
-      // Salva o novo status da aposta
-      await this.betRepository.save(bet);
     }
     console.log('Total de Ganhadores Identificados:', winnersOfThisRun.length);
     return winnersOfThisRun;
   }
-  async findAllByUser(userId: any) {
+  async findAllByUser(userId: number) {
     try {
       return await this.betRepository.find({
         where: { user: { id: userId } },
@@ -109,12 +112,14 @@ export class BetsService {
   async findOne(id: number) {
     return await this.betRepository.findOne({ where: { id } });
   }
-  update(arg0: number, updateBetDto: UpdateBetDto) {
-    throw new Error('Method not implemented.');
+  async update(id: number, updateBetDto: UpdateBetDto) {
+    return await this.betRepository.update(id, updateBetDto);
   }
-  remove(arg0: number) {
-    throw new Error('Method not implemented.');
+
+  async remove(id: number) {
+    return await this.betRepository.delete(id);
   }
+
   constructor(
     private dataSource: DataSource,
     @InjectRepository(Bet)
@@ -128,9 +133,9 @@ export class BetsService {
 
     try {
       // Busca a carteira dentro da transação
-      const wallet = await queryRunner.manager.findOne(Wallet, {
+      const wallet = (await queryRunner.manager.findOne(Wallet, {
         where: { user: { id: userId } },
-      });
+      })) as Wallet;
 
       if (!wallet) {
         throw new BadRequestException('Carteira não encontrada.');
@@ -147,8 +152,8 @@ export class BetsService {
       }
 
       // Atualiza o saldo na base de dados
-      wallet.balance = currentBalance - betValue;
-      await queryRunner.manager.save(wallet);
+      wallet.balance = Number(currentBalance) - Number(betValue);
+      await queryRunner.manager.save(Wallet, wallet);
 
       // Cria o registo da aposta
       const newBet = queryRunner.manager.create(Bet, {
@@ -156,18 +161,18 @@ export class BetsService {
         chosenNumber: String(createBetDto.chosenNumber),
         type: createBetDto.type,
         status: BetStatus.PENDING,
-        user: { id: userId } as any,
+        user: { id: userId } as unknown as Bet['user'],
       });
 
-      const savedBet = await queryRunner.manager.save(newBet);
+      await queryRunner.manager.save(Bet, newBet);
 
       // Se deu certo, confirma tudo no banco
       await queryRunner.commitTransaction();
-      return savedBet;
-    } catch (err) {
+      return newBet;
+    } catch (err: unknown) {
       // Se der qualquer erro, desfaz a retirada do dinheiro
       await queryRunner.rollbackTransaction();
-      throw err;
+      throw err instanceof Error ? err : new Error('Erro desconhecido');
     } finally {
       // Finaliza a ligação com o banco
       await queryRunner.release();

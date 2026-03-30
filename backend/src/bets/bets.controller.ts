@@ -7,18 +7,20 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request,
+  Req,
 } from '@nestjs/common';
 import { BetsService } from './bets.service';
 import { CreateBetDto } from './dto/create-bet.dto';
 import { UpdateBetDto } from './dto/update-bet.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+interface RequestWithUser extends Request {
+  user: {
+    userId: number;
+    email: string;
+  };
+}
 
 @ApiTags('Apostas')
 @ApiBearerAuth()
@@ -30,7 +32,7 @@ export class BetsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Realiza aposta' })
-  create(@Request() req, @Body() createBetDto: CreateBetDto) {
+  create(@Req() req: RequestWithUser, @Body() createBetDto: CreateBetDto) {
     return this.betsService.create(req.user.userId, createBetDto);
   }
 
@@ -38,7 +40,7 @@ export class BetsController {
   @UseGuards(JwtAuthGuard)
   @Get('my-bets')
   @ApiOperation({ summary: 'Lista todas as apostas do usuário logado' })
-  findAll(@Request() req) {
+  findAll(@Req() req: RequestWithUser) {
     return this.betsService.findAllByUser(req.user.userId);
   }
 

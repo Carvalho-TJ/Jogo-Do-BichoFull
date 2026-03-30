@@ -11,15 +11,6 @@ const History = () => {
   const [balance, setBalance] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedUser = JSON.parse(localStorage.getItem('user'));
-    if (!token) return navigate('/login');
-    
-    setUser(savedUser);
-    fetchData(token);
-  }, []);
-
   const fetchData = async (token) => {
     try {
       const [betsRes, walletRes] = await Promise.all([
@@ -30,6 +21,20 @@ const History = () => {
       setBalance(walletRes.data.balance);
     } catch (err) { console.error(err); }
   };
+
+  useEffect(() => {
+    const init = async () => {
+      const savedUser = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+
+      if (!token) return navigate('/login');
+
+      setUser(savedUser);
+      await fetchData(token);
+    };
+
+    init();
+  }, [navigate]);
 
   // Cálculos para os Cards
   const totalBets = bets.length;

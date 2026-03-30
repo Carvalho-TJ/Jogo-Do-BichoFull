@@ -32,18 +32,6 @@ const Dashboard = () => {
   const [winData, setWinData] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem('user'));
-    const token = localStorage.getItem('token');
-    if (savedUser && token) {
-      setUser(savedUser);
-      fetchBalance(token);
-      fetchDraws(token);
-    } else {
-      navigate('/login');
-    }
-  }, [navigate]);
-
   const fetchBalance = async (token) => {
     try {
       const response = await axios.get('http://localhost:3000/wallets/my-balance', {
@@ -61,6 +49,23 @@ const Dashboard = () => {
       setDraws(response.data);
     } catch (error) { console.error("Erro ao buscar sorteios:", error); }
   };
+
+  useEffect(() => {
+  const init = async () => {
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+
+    if (savedUser && token) {
+      setUser(savedUser);
+      await fetchBalance(token);
+      await fetchDraws(token);
+    } else {
+      navigate('/login');
+    }
+  };
+
+  init();
+}, [navigate]);
 
   const handleSelectAnimal = (animal) => {
     setBetType('grupo');

@@ -2,23 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Bet, BetStatus, BetType } from '../bets/entities/bet.entity';
 import { Draw } from './entities/draw.entity';
-import { CreateDrawDto } from './dto/create-draw.dto';
-import { UpdateDrawDto } from './dto/update-draw.dto';
 
 @Injectable()
 export class DrawsService {
-  create(createDrawDto: CreateDrawDto) {
-    throw new Error('Method not implemented.');
-  }
-  findOne(arg0: number) {
-    throw new Error('Method not implemented.');
-  }
-  update(arg0: number, updateDrawDto: UpdateDrawDto) {
-    throw new Error('Method not implemented.');
-  }
-  remove(arg0: number) {
-    throw new Error('Method not implemented.');
-  }
   constructor(private dataSource: DataSource) {}
 
   async getHistory() {
@@ -46,7 +32,16 @@ export class DrawsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const winnersOfThisRun: any[] = [];
+    type Winner = {
+      userId: number;
+      type: BetType;
+      chosenNumber: string;
+      value: number;
+      prizeValue: number;
+      multiplier: number;
+    };
+
+    const winnersOfThisRun: Winner[] = [];
 
     try {
       const drawRecord = queryRunner.manager.create(Draw, {
@@ -56,7 +51,7 @@ export class DrawsService {
       const savedDraw = await queryRunner.manager.save(drawRecord);
 
       const pendingBets = await queryRunner.manager.find(Bet, {
-        where: [{ status: BetStatus.PENDING }, { status: 'PENDING' as any }],
+        where: { status: BetStatus.PENDING },
         relations: ['user', 'user.wallet'],
       });
 
@@ -92,7 +87,7 @@ export class DrawsService {
             multiplier: multiplier,
           });
 
-          if (bet.user.wallet) {
+          if (bet.user?.wallet) {
             bet.user.wallet.balance = Number(bet.user.wallet.balance) + prize;
             await queryRunner.manager.save(bet.user.wallet);
           }

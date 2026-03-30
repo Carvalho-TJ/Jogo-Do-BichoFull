@@ -5,7 +5,6 @@ import {
   IsString,
   IsEnum,
   MaxLength,
-  min,
 } from 'class-validator';
 import { BetType } from '../entities/bet.entity';
 import { ApiProperty } from '@nestjs/swagger';

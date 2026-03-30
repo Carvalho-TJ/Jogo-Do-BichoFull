@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { DrawsService } from './draws.service';
 import { BetsService } from '../bets/bets.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -19,14 +19,7 @@ export class DrawsController {
     private readonly betsService: BetsService,
   ) {}
 
-  @ApiOperation({ summary: 'Executa um novo sorteio e processa ganhadores' })
-  @ApiResponse({
-    status: 201,
-    description: 'Sorteio realizado com sucesso.',
-    type: DrawResponseDto,
-  })
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Post('trigger')
   @ApiOperation({ summary: 'Executa um novo sorteio e processa ganhadores' })
   @ApiResponse({
@@ -34,13 +27,12 @@ export class DrawsController {
     description: 'Sorteio realizado com sucesso.',
     type: DrawResponseDto,
   })
-  async triggerDraw(@Request() req) {
+  async triggerDraw() {
     const result = await this.drawsService.runDraw();
     return result;
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Get()
   async findAll() {
     return await this.drawsService.getHistory();
