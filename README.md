@@ -49,7 +49,6 @@ O sistema permite que usuários:
 |--------|----------------|-------------------------------------------------|
 | POST   | `/auth/register` | Cria um novo usuário com saldo inicial.       |
 | POST   | `/auth/login`    | Autentica o usuário e retorna um JWT Token.   |
-| GET    | `/auth/me`       | Retorna dados do usuário autenticado.         |
 
 ---
 
@@ -57,8 +56,7 @@ O sistema permite que usuários:
 
 | Método | Endpoint            | Descrição                                  |
 |--------|---------------------|--------------------------------------------|
-| GET    | `/wallet/balance`   | Retorna o saldo atual do usuário.          |
-| GET    | `/wallet/history`   | Histórico de ganhos e perdas.              |
+| GET    | `/wallet/my-balance`   | Retorna o saldo atual do usuário.          |
 
 ---
 
@@ -76,7 +74,6 @@ O sistema permite que usuários:
 | Método | Endpoint          | Descrição                                          |
 |--------|------------------|----------------------------------------------------|
 | GET    | `/draws/trigger`  | Executa o sorteio e processa ganhadores.               |
-| GET    | `/draws/history` | Lista os últimos resultados sorteados.           |
 
 ---
 
