@@ -33,13 +33,6 @@ jobs:
           VALIDATE_YAML: true
           VALIDATE_MARKDOWN: true
 
-          # DESATIVAR LINTERS DESNECESSÁRIOS
-          VALIDATE_PYTHON: false
-          VALIDATE_JAVA: false
-          VALIDATE_DOCKERFILE: false
-          VALIDATE_KUBERNETES: false
-          VALIDATE_BASH: false
-
           # IGNORAR PASTAS DE BUILD
           FILTER_REGEX_EXCLUDE: (node_modules|dist|build|coverage)
 
