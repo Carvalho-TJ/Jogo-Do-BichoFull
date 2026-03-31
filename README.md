@@ -100,7 +100,7 @@ Siga os passos abaixo para configurar o ambiente localmente.
 git clone [https://github.com/Carvalho-TJ/Jogo-Do-BichoFull.git](https://github.com/Carvalho-TJ/Jogo-Do-BichoFull.git)
 ```
 **Entre na pasta**:
-```
+```bash
 cd Jogo-Do-BichoFull
 ```
 ## 2. Configurando o Banco de Dados (MySQL)
@@ -109,16 +109,16 @@ cd Jogo-Do-BichoFull
 
 ## 3. Configurando o Backend (NestJS)
 **Entre na pasta do Backend**:
-```
+```bash
 cd backend
 ```
 Instale as depenedencias:
-```
+```bash
 npm install
 ```
 Dentro da pasta /backend/database/.env.example altere as informações do arquivo com as seguintes credenciais:
 Caso não tenha, Crie um arquivo .env na raiz da pasta /backend
-```
+```bash
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=seu_usuario_mysql
@@ -126,23 +126,23 @@ DB_PASSWORD=sua_senha_mysql
 DB_NAME=bichofull_db
 ```
 ## 🚀 Inicie o servidor Backend
-```
+```bash
 npm run start:dev
 ```
 ## 4. Configurar o Frontend
 **Abra um novo terminal e navegue até a pasta do cliente**:
-```
+```bash
 cd frontend
 ```
 Instale as depenedencias:
-```
+```bash
 npm install
 ```
 ## 🚀 Inicie o servidor Frontend
-```
+```bash
 npm run dev
 ```
-Acesse a aplicação em: http://localhost:5173 (ou a porta indicada pelo Vite).
+Acesse a aplicação em: <http://localhost:5173> (ou a porta indicada pelo Vite).
 
 ---
 
