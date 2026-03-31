@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Envelope, Lock, Eye, EyeSlash, BoxArrowInRight } from 'react-bootstrap-icons';
 import Logo from "../assets/bichofull-logo.png"
 
-// Definindo as cores da paleta
 const ROXO_VIBRANTE = '#8b5cf6';
 const VERDE_MENTA = '#6ee7b7';
 
@@ -30,7 +29,7 @@ const LoginPage = () => {
 
       console.log('Sucesso!', response.data);
       
-      // Salva o token no "cofre" do navegador
+      // Salva o token no cofre do navegador
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 

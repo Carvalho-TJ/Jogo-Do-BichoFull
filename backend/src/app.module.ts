@@ -10,10 +10,10 @@ import { DrawsModule } from './draws/draws.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.DB_HOST || 'db',
       port: 3306,
       username: 'root',
-      password: '1234',
+      password: '4016',
       database: 'bichofull_db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,

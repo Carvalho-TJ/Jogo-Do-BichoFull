@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: bichofull_db
+      MYSQL_ROOT_PASSWORD: 4016
+    ports:
+      - "3307:3306"
+    networks:
+      - bicho-network
+
+  backend:
+    build: ./backend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=4016
+      - DB_DATABASE=bichofull_db
+    networks:
+      - bicho-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - bicho-network
+
+networks:
+  bicho-network:
+    driver: bridge

@@ -32,9 +32,11 @@ const Dashboard = () => {
   const [winData, setWinData] = useState(null);
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const fetchBalance = async (token) => {
     try {
-      const response = await axios.get('http://localhost:3000/wallets/my-balance', {
+      const response = await axios.get(`${apiUrl}/wallets/my-balance`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBalance(response.data.balance);
@@ -43,7 +45,7 @@ const Dashboard = () => {
 
   const fetchDraws = async (token) => {
     try {
-      const response = await axios.get('http://localhost:3000/draws', {
+      const response = await axios.get(`${apiUrl}/draws`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDraws(response.data);
@@ -83,7 +85,7 @@ const Dashboard = () => {
     }
 
     try {
-      await axios.post('http://localhost:3000/bets', {
+      await axios.post(`${apiUrl}/bets`, {
         value: parseFloat(betValue),
         chosenNumber: formattedNumber,
         type: betType,
@@ -102,7 +104,7 @@ const Dashboard = () => {
   const handleRunDraw = async () => {
   const token = localStorage.getItem('token');
   try {
-    const response = await axios.post('http://localhost:3000/draws/trigger', {}, {
+    const response = await axios.post(`${apiUrl}/draws/trigger`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     });
 

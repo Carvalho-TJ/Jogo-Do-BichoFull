@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Importante!
-import axios from 'axios'; // Importante!
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Envelope, Lock, Eye, EyeSlash, Person, PersonPlus } from 'react-bootstrap-icons';
 import Logo from "../assets/bichofull-logo.png";
@@ -19,7 +19,7 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
-      // Enviando os dados para a rota do NestJS
+      // Enviando os dados para a rota
       const response = await axios.post('http://localhost:3000/users', {
         name,
         email,
@@ -28,13 +28,11 @@ const RegisterPage = () => {
 
       console.log('Usuário criado com sucesso:', response.data);
       alert('Conta criada com sucesso! Agora faça seu login.');
-      
-      // Redireciona para a tela de login
+
       navigate('/login');
 
     } catch (error) {
       console.error('Erro no cadastro:', error.response?.data);
-      // Se o email já existir, o NestJS vai mandar um erro 400 ou 409
       alert(error.response?.data?.message || 'Erro ao criar conta. Tente outro e-mail.');
     }
   };

@@ -11,11 +11,13 @@ const History = () => {
   const [balance, setBalance] = useState(0);
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const fetchData = async (token) => {
     try {
       const [betsRes, walletRes] = await Promise.all([
-        axios.get('http://localhost:3000/bets/my-bets', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:3000/wallets/my-balance', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${apiUrl}/bets/my-bets`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${apiUrl}/wallets/my-balance`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       setBets(betsRes.data);
       setBalance(walletRes.data.balance);
